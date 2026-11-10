@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: transparent;
+        font-family: "Microsoft YaHei UI", "Segoe UI", sans-serif;
+        user-select: none;
+      }
+      .card {
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 8px 10px;
+        border-radius: 14px;
+        background: #fffafc;
+        border: 1.5px solid #ffb3cc;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .name {
+        color: #e45b8a;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      .close {
+        border: 0;
+        background: #ffe4ee;
+        color: #b64b73;
+        border-radius: 999px;
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+      }
+      .bar {
+        margin-top: 8px;
+        height: 8px;
+        border-radius: 99px;
+        background: #f3e2e8;
+        overflow: hidden;
+      }
+      .bar > div {
+        height: 100%;
+        width: 60%;
+        background: linear-gradient(90deg, #ff8fb5, #ffc1d8);
+      }
+      .meta {
+        margin-top: 4px;
+        font-size: 11px;
+        color: #a06a80;
+      }
+      .text {
+        margin: 6px 0 0;
+        color: #4d3942;
+        font-size: 13px;
+        line-height: 1.35;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+      }
+      .row {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+        flex-shrink: 0;
+      }
+      button.food,
+      .send {
+        border: 0;
+        cursor: pointer;
+        border-radius: 999px;
+        background: #fff0f5;
+        color: #b64b73;
+        padding: 6px 10px;
+        font-family: inherit;
+      }
+      .compose {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+        flex-shrink: 0;
+      }
+      input {
+        flex: 1;
+        border: 1px solid #ffd0e0;
+        background: white;
+        border-radius: 999px;
+        padding: 7px 10px;
+        font-family: inherit;
+        outline: none;
+      }
+      .send {
+        background: #ff7da8;
+        color: white;
+      }
+      body.toast .compose,
+      body.toast .row,
+      body.toast .close,
+      body.toast .bar,
+      body.toast .meta {
+        display: none;
+      }
+      body.toast .card {
+        padding-bottom: 8px;
+      }
+      body.toast .text {
+        -webkit-line-clamp: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="top">
+        <div class="name">Doro</div>
+        <button class="close" id="close" type="button">×</button>
+      </div>
+      <div class="bar"><div id="fill"></div></div>
+      <div class="meta" id="meta">饱食 60</div>
+      <div class="text" id="text">Doro 在这里。</div>
+      <div class="row">
+        <button class="food" type="button" data-food="cookie">饼干</button>
+        <button class="food" type="button" data-food="berry">草莓</button>
+        <button class="food" type="button" data-food="milk">牛奶</button>
+      </div>
+      <form class="compose" id="form">
+        <input id="input" maxlength="80" placeholder="跟 Doro 说点什么" />
+        <button class="send" type="submit">发送</button>
+      </form>
+    </div>
+    <script>
+      const text = document.getElementById("text");
+      const fill = document.getElementById("fill");
+      const meta = document.getElementById("meta");
+      const input = document.getElementById("input");
+
+      window.bubble.onShow((payload) => {
+        document.body.classList.toggle("toast", payload.mode === "toast");
+        text.textContent = payload.text || "";
+        if (payload.name) document.querySelector(".name").textContent = payload.name;
+        const hunger = Math.max(0, Math.min(100, payload.hunger ?? 60));
+        const full = Math.round(100 - hunger);
+        fill.style.width = full + "%";
+        meta.textContent = "饱食 " + full;
+        if (payload.mode === "chat") {
+          setTimeout(() => input.focus(), 40);
+        }
+      });
+
+      document.getElementById("form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const value = input.value.trim();
+        if (!value) return;
+        input.value = "";
+        window.bubble.send(value);
+      });
+
+      document.getElementById("close").addEventListener("click", () => window.bubble.close());
+      for (const button of document.querySelectorAll(".food")) {
+        button.addEventListener("click", () => window.bubble.feed(button.dataset.food));
+      }
+    </script>
+  </body>
+</html>

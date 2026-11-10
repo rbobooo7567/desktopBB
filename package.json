@@ -1,0 +1,53 @@
+{
+  "name": "doro-pet",
+  "version": "1.0.0",
+  "private": true,
+  "description": "桌面宠物，双击即可启动。",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --win dir"
+  },
+  "build": {
+    "appId": "local.doro.desktop-pet",
+    "productName": "Doro桌宠",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "pet.js",
+      "pet.html",
+      "bubble.html",
+      "bubble-preload.js",
+      "wander.mjs",
+      "talk.mjs",
+      "dialogue.json",
+      "characters.json",
+      "icon/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "**/node_modules/koffi/**"
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "koffi": "^2.11.0"
+  },
+  "devDependencies": {
+    "electron": "^33.4.11",
+    "electron-builder": "^26.15.3"
+  }
+}
